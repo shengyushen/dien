@@ -1,3 +1,23 @@
+# only this iamge have python 3.5 and tf-gpu 1.14 and cuda 8.0that can run dien
+#nvidia-docker run -it --ipc=host -v /root/ssy:/root/ssy --name ssyDIEN  nvidia/cuda:10.0-cudnn7-devel-ubuntu16.04  
+docker pull nvidia/cuda:8.0-cudnn7-devel-ubuntu16.04
+nvidia-docker run -it --ipc=host -v /root/ssy:/root/ssy --name ssyDIEN   nvidia/cuda:8.0-cudnn7-devel-ubuntu16.04
+nvidia-docker start ssyDIEN
+nvidia-docker exec -it ssyDIEN /bin/bash
+
+source /root/ssy/ai/training/env.sh
+apt update
+apt install python3 -y
+apt install python3-pip -y
+# first install this version,
+# or else if you install tensorflow-gpu first, it will use newer numpy requiring python3.7
+pip3 install numpy==1.14.5
+pip3 install h5py==2.7.0
+pip3 install tensorflow-gpu==1.14.0
+
+
+
+
 # Deep Interest Evolution Network for Click-Through Rate Prediction
 https://arxiv.org/abs/1809.03672
 ## prepare data
@@ -27,12 +47,14 @@ When you see the files below, you can do the next work.
 ## train model
 ```
 python train.py train [model name] 
+SSY's version
+python3 ./script/train.py train DIEN
 ```
 The model blelow had been supported: 
 - DNN 
 - PNN 
 - Wide (Wide&Deep NN) 
-- DIN  (https://arxiv.org/abs/1706.06978) 
+- DIN  (https://arxiv.org/abs/1705.06978) 
 - DIEN (https://arxiv.org/pdf/1809.03672.pdf) 
 
 Note: we use tensorflow 1.4.

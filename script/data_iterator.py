@@ -1,6 +1,9 @@
 import numpy
 import json
-import cPickle as pkl
+#import cPickle as pkl
+# SSY python2 have cPickle, but python3 dont
+# SSY change it to pickle
+import pickle as pkl
 import random
 
 import gzip
