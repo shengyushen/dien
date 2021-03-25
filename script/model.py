@@ -26,29 +26,35 @@ class Model(object):
 
         # Embedding layer
         with tf.name_scope('Embedding_layer'):
+            # SSY flat emb with 2 dim
             self.uid_embeddings_var = tf.get_variable("uid_embedding_var", [n_uid, EMBEDDING_DIM])
             tf.summary.histogram('uid_embeddings_var', self.uid_embeddings_var)
+            # SSY looking up operator
             self.uid_batch_embedded = tf.nn.embedding_lookup(self.uid_embeddings_var, self.uid_batch_ph)
 
             self.mid_embeddings_var = tf.get_variable("mid_embedding_var", [n_mid, EMBEDDING_DIM])
             tf.summary.histogram('mid_embeddings_var', self.mid_embeddings_var)
             self.mid_batch_embedded = tf.nn.embedding_lookup(self.mid_embeddings_var, self.mid_batch_ph)
+            # SSY what is this for?
             self.mid_his_batch_embedded = tf.nn.embedding_lookup(self.mid_embeddings_var, self.mid_his_batch_ph)
-            if self.use_negsampling:
+            if self.use_negsampling: # SSY neg sample for no click
                 self.noclk_mid_his_batch_embedded = tf.nn.embedding_lookup(self.mid_embeddings_var, self.noclk_mid_batch_ph)
 
             self.cat_embeddings_var = tf.get_variable("cat_embedding_var", [n_cat, EMBEDDING_DIM])
             tf.summary.histogram('cat_embeddings_var', self.cat_embeddings_var)
             self.cat_batch_embedded = tf.nn.embedding_lookup(self.cat_embeddings_var, self.cat_batch_ph)
+            # SSY find below
             self.cat_his_batch_embedded = tf.nn.embedding_lookup(self.cat_embeddings_var, self.cat_his_batch_ph)
             if self.use_negsampling:
                 self.noclk_cat_his_batch_embedded = tf.nn.embedding_lookup(self.cat_embeddings_var, self.noclk_cat_batch_ph)
 
         self.item_eb = tf.concat([self.mid_batch_embedded, self.cat_batch_embedded], 1)
+        # SSY cat and then reduce,but on diff dim
+        # with his means history?
         self.item_his_eb = tf.concat([self.mid_his_batch_embedded, self.cat_his_batch_embedded], 2)
         self.item_his_eb_sum = tf.reduce_sum(self.item_his_eb, 1)
         if self.use_negsampling:
-            self.noclk_item_his_eb = tf.concat(
+            self.noclk_item_his_eb = tf.concat( # SSY -1 dim means the last dimention
                 [self.noclk_mid_his_batch_embedded[:, :, 0, :], self.noclk_cat_his_batch_embedded[:, :, 0, :]], -1)# 0 means only using the first negative item ID. 3 item IDs are inputed in the line 24.
             self.noclk_item_his_eb = tf.reshape(self.noclk_item_his_eb,
                                                 [-1, tf.shape(self.noclk_mid_his_batch_embedded)[1], 36])# cat embedding 18 concate item embedding 18.
@@ -185,6 +191,7 @@ class Model_DIN_V2_Gru_att_Gru(Model):
 
         # RNN layer(-s)
         with tf.name_scope('rnn_1'):
+            # SSY each gru cell have a vector size, it is NOT the length of gru sequence
             rnn_outputs, _ = dynamic_rnn(GRUCell(HIDDEN_SIZE), inputs=self.item_his_eb,
                                          sequence_length=self.seq_len_ph, dtype=tf.float32,
                                          scope="gru1")
@@ -334,19 +341,21 @@ class Model_DIN(Model):
 
 
 class Model_DIN_V2_Gru_Vec_attGru_Neg(Model):
+    # SSY n_uid n_mid n_cat seems to be size of uid mid and cat
     def __init__(self, n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE, use_negsampling=True):
+        # SSY calling nito Model defined above
         super(Model_DIN_V2_Gru_Vec_attGru_Neg, self).__init__(n_uid, n_mid, n_cat,
                                                           EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE,
                                                           use_negsampling)
 
         # RNN layer(-s)
         with tf.name_scope('rnn_1'):
-            rnn_outputs, _ = dynamic_rnn(GRUCell(HIDDEN_SIZE), inputs=self.item_his_eb,
+            rnn_outputs, _ = dynamic_rnn(GRUCell(HIDDEN_SIZE), inputs=self.item_his_eb, # SSY his seq length 
                                          sequence_length=self.seq_len_ph, dtype=tf.float32,
                                          scope="gru1")
             tf.summary.histogram('GRU_outputs', rnn_outputs)
 
-        aux_loss_1 = self.auxiliary_loss(rnn_outputs[:, :-1, :], self.item_his_eb[:, 1:, :],
+        aux_loss_1 = self.auxiliary_loss(rnn_outputs[:, :-1, :], self.item_his_eb[:, 1:, :], # SSY aux loss 
                                          self.noclk_item_his_eb[:, 1:, :],
                                          self.mask[:, 1:], stag="gru")
         self.aux_loss = aux_loss_1

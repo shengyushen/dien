@@ -122,6 +122,7 @@ def train(
         train_data = DataIterator(train_file, uid_voc, mid_voc, cat_voc, batch_size, maxlen, shuffle_each_epoch=False)
         test_data = DataIterator(test_file, uid_voc, mid_voc, cat_voc, batch_size, maxlen)
         n_uid, n_mid, n_cat = train_data.get_n()
+        print("n_uid %d n_mid %d n_cat %d",n_uid,n_mid,n_cat)
         if model_type == 'DNN':
             model = Model_DNN(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
         elif model_type == 'PNN':
@@ -138,7 +139,8 @@ def train(
             model = Model_DIN_V2_Gru_QA_attGru(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
         elif model_type == 'DIN-V2-gru-vec-attGru':
             model = Model_DIN_V2_Gru_Vec_attGru(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
-        elif model_type == 'DIEN':
+        elif model_type == 'DIEN': 
+            # SSY DIEN
             model = Model_DIN_V2_Gru_Vec_attGru_Neg(n_uid, n_mid, n_cat, EMBEDDING_DIM, HIDDEN_SIZE, ATTENTION_SIZE)
         else:
             print ("Invalid model_type : %s", model_type)

@@ -42,6 +42,7 @@ from tensorflow.python.util import nest
 
 # pylint: disable=protected-access
 _concat = rnn_cell_impl._concat
+# SSY fixit
 #_like_rnncell = rnn_cell_impl._like_rnncell
 # SSY _like_rnncell is depreciate and should be replaced with assert_like_rnncell
 _like_rnncell = rnn_cell_impl.assert_like_rnncell
@@ -515,6 +516,7 @@ def dynamic_rnn(cell, inputs, att_scores=None, sequence_length=None, initial_sta
       but needed for back prop from GPU to CPU.  This allows training RNNs
       which would typically not fit on a single GPU, with very minimal (or no)
       performance penalty.
+    SSY intereseting, we can swap memory to CPU
     time_major: The shape format of the `inputs` and `outputs` Tensors.
       If true, these `Tensors` must be shaped `[max_time, batch_size, depth]`.
       If false, these `Tensors` must be shaped `[batch_size, max_time, depth]`.
@@ -749,6 +751,7 @@ def _dynamic_rnn_loop(cell,
       input_.set_shape(shape[1:])
 
     input_t = nest.pack_sequence_as(structure=inputs, flat_sequence=input_t)
+    # SSY the cell
     if att_scores is not None:
         att_score = att_scores[:, time, :]
         call_cell = lambda: cell(input_t, state, att_score)

@@ -8,7 +8,9 @@ from tensorflow.python.ops import math_ops
 from tensorflow.python.ops import init_ops
 from tensorflow.python.ops import array_ops
 from tensorflow.python.ops import variable_scope as vs
-from keras import backend as K
+#from keras import backend as K
+# SSY 
+from tensorflow.python.keras import backend as K
 
 class QAAttGRUCell(RNNCell):
   """Gated Recurrent Unit cell (cf. http://arxiv.org/abs/1406.1078).

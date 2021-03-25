@@ -1,9 +1,8 @@
-# only this iamge have python 3.5 and tf-gpu 1.14 and cuda 8.0that can run dien
-#nvidia-docker run -it --ipc=host -v /root/ssy:/root/ssy --name ssyDIEN  nvidia/cuda:10.0-cudnn7-devel-ubuntu16.04  
-docker pull nvidia/cuda:8.0-cudnn7-devel-ubuntu16.04
-nvidia-docker run -it --ipc=host -v /root/ssy:/root/ssy --name ssyDIEN   nvidia/cuda:8.0-cudnn7-devel-ubuntu16.04
-nvidia-docker start ssyDIEN
-nvidia-docker exec -it ssyDIEN /bin/bash
+nvidia-docker run -it --ipc=host -v /root/ssy:/root/ssy --name ssyDIEN10  nvidia/cuda:10.0-cudnn7-devel-ubuntu16.04  
+#docker pull nvidia/cuda:8.0-cudnn7-devel-ubuntu16.04
+#nvidia-docker run -it --ipc=host -v /root/ssy:/root/ssy --name ssyDIEN   nvidia/cuda:8.0-cudnn7-devel-ubuntu16.04
+nvidia-docker start ssyDIEN10
+nvidia-docker exec -it ssyDIEN10 /bin/bash
 
 source /root/ssy/ai/training/env.sh
 apt update
@@ -13,6 +12,7 @@ apt install python3-pip -y
 # or else if you install tensorflow-gpu first, it will use newer numpy requiring python3.7
 pip3 install numpy==1.14.5
 pip3 install h5py==2.7.0
+pip3 install futures==2.2.0
 pip3 install tensorflow-gpu==1.14.0
 
 
